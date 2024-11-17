@@ -3,10 +3,24 @@ const router = express.Router();
 
 const posts = require("../data/posts");
 const error = require("../utilities/error");
+const users = require("../data/users");
 
 router
   .route("/")
-  .get((req, res) => {
+  .get((req, res, next) => {
+    if (req.query.userId) {
+
+      const userId = Number(req.query.userId);
+    
+      // const user = users.find((u) => u.id == userId);
+      // if (!user) return next (error(404, "User not found"))
+    
+        const userPosts = posts.filter((post) => post.userId == userId);
+        return res.json({
+          //user: {id: user.id, name: user.name, username: user.username},
+          posts: userPosts});
+        }
+
     const links = [
       {
         href: "posts/:id",
@@ -17,6 +31,9 @@ router
 
     res.json({ posts, links });
   })
+
+
+
   .post((req, res, next) => {
     if (req.body.userId && req.body.title && req.body.content) {
       const post = {

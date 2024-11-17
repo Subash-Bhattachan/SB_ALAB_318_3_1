@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const users = require("../data/users");
+const posts = require("../data/posts");
 const error = require("../utilities/error");
 
 router
@@ -34,6 +35,26 @@ router
       res.json(users[users.length - 1]);
     } else next(error(400, "Insufficient Data"));
   });
+
+//GET /api/users/:id/posts
+router
+//.route("/api/users/:id/posts")
+.route("/:id/posts")
+.get((req, res, next) => {
+  const userId = Number(req.params.id);
+
+  const user = users.find((u) => u.id == userId);
+  if (!user) return next (error(404, "User not found"))
+
+    const userPosts = posts.filter((post) => post.userId == userId);
+    res.json({
+      //user: {id: user.id, name: user.name, username: user.username},
+      posts: userPosts
+    });
+
+});
+
+
 
 router
   .route("/:id")
