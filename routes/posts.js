@@ -102,7 +102,7 @@ router
   router
   .route("/:id/comments")
   .get((req, res, next) => {
-    const id = Number(req.params.id);  // Extract postId
+    const id = Number(req.params.id);  // picking postId
     if (isNaN(id)) {
       return next(new Error("Invalid post ID. Number needed."));
     }
@@ -114,21 +114,15 @@ router
         return next(new Error("Invalid userId. Number needed."));
       }
 
-      // Filter comments by userId and postId
+      // this filters the comments by userId and postId
       const userComments = comments.filter((comment) => comment.userId === userId && comment.postId === id);
       res.json({
         postId: id,
         userId: userId,
         comments: userComments
       });
-    } else {
-      // Filter comments by postId when no userId is specified
-      const postComments = comments.filter((comment) => comment.postId === id);
-      res.json({
-        postId: id,
-        comments: postComments
-      });
-    }
+    } 
+    
   });
 
 
