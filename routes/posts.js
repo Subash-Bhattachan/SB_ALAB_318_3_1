@@ -2,9 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 const posts = require("../data/posts");
-const error = require("../utilities/error");
 const users = require("../data/users");
+const comments = require("../data/comments");
+const error = require("../utilities/error");
 
+//http://localhost:3000/api/posts?userId=1&api-key=perscholas
 router
   .route("/")
   .get((req, res, next) => {
@@ -18,6 +20,7 @@ router
         const userPosts = posts.filter((post) => post.userId == userId);
         return res.json({
           //user: {id: user.id, name: user.name, username: user.username},
+          userId: userId,
           posts: userPosts});
         }
 
@@ -93,5 +96,42 @@ router
     if (post) res.json(post);
     else next();
   });
+
+
+
+  router
+  .route("/:id/comments")
+  .get((req, res, next) => {
+    const id = Number(req.params.id);  // Extract postId
+    if (isNaN(id)) {
+      return next(new Error("Invalid post ID. Number needed."));
+    }
+
+    if (req.query.userId) {
+      const userId = Number(req.query.userId);
+      
+      if (isNaN(userId)) {
+        return next(new Error("Invalid userId. Number needed."));
+      }
+
+      // Filter comments by userId and postId
+      const userComments = comments.filter((comment) => comment.userId === userId && comment.postId === id);
+      res.json({
+        postId: id,
+        userId: userId,
+        comments: userComments
+      });
+    } else {
+      // Filter comments by postId when no userId is specified
+      const postComments = comments.filter((comment) => comment.postId === id);
+      res.json({
+        postId: id,
+        comments: postComments
+      });
+    }
+  });
+
+
+
 
 module.exports = router;
